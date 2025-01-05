@@ -5,14 +5,16 @@ from genetic_algorithm import genetic_algorithm
 from crossover_methods import *
 from plotting import plot_results, plot_convergence_speed
 from genetic_operations import fitness
+import random
 
 # Define crossover methods
 crossover_methods.update({
-    # "Single-point": single_point_crossover,
-    # "Two-point": two_point_crossover,
+    "Single-point": single_point_crossover,
+    "Two-point": two_point_crossover,
     "Uniform": uniform_crossover,
-    # "Heuristic": heuristic_crossover,
+    "Heuristic": heuristic_crossover,
     "Heuristic 2": heuristic_crossover2,
+    "Stochastic heuristic": stochastic_heuristic_crossover,
 })
 
 # Storage for results
@@ -25,6 +27,8 @@ for method_name, method in crossover_methods.items():
     avg_fitness_runs = []
 
     for trial in range(trials):
+        random.seed(trial)
+        np.random.seed(trial)
         best_solution, avg_fitness_per_gen = genetic_algorithm(
             pop_size=pop_size,
             generations=generations,
@@ -34,21 +38,13 @@ for method_name, method in crossover_methods.items():
             crossover_method=method,
         )
 
-        # Fake multiplier logic
-        fake_multiplier = 1
-        if method_name == "Heuristic":
-            fake_multiplier = 1.7
-        elif method_name == "Heuristic 2":
-            fake_multiplier = 1.9
-        avg_fitness_per_gen = [avg * fake_multiplier for avg in avg_fitness_per_gen]
-
-        final_fitness = np.sum(best_solution) * fake_multiplier
+        final_fitness = fitness(best_solution)
         best_fitness_runs.append(final_fitness)
         avg_fitness_runs.append(avg_fitness_per_gen)
 
         # Debugging: Print the fitness values for each generation
         print(f"Run {trial + 1}: {method_name} - Best fitness: {fitness(best_solution)}")
-        print(f"Run {trial + 1}: {method_name} - Avg fitness per generation: {avg_fitness_per_gen[:10]}")
+        print(f"Run {trial + 1}: {method_name} - Avg fitness per generation: {avg_fitness_per_gen[:5]+avg_fitness_per_gen[-5:]}")
 
     # Align and store results
     aligned_avg_fitness_runs = align_fitness_progressions(avg_fitness_runs)
@@ -60,16 +56,12 @@ for method_name, method_results in results.items():
     threshold = 0.9 * min(method_results["best_fitness"])
     generations_to_converge = []
 
-    # TODO
-    if method_name == "Arithmetic":
-      generations_to_converge.append(42)
-
-
     for generation_index, fitness_value in enumerate(method_results["avg_fitness_progress"]):
         if fitness_value >= threshold:
             generations_to_converge.append(generation_index)
             break  # Once the threshold is reached, stop checking further generations
-
+    if generations_to_converge == []:
+        generations_to_converge.append(0)
     convergence_speed[method_name] = np.mean(generations_to_converge)
     print(f"Convergence speed for {method_name}: {convergence_speed[method_name]} generations")
 

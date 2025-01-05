@@ -22,59 +22,6 @@ def two_point_crossover(parent1, parent2):
     child2 = np.vstack((parent2[:point1], parent1[point1:point2], parent2[point2:]))
     return repair_balance(child1), repair_balance(child2)
 
-def arithmetic_crossover(parent1, parent2, alpha=0.5):
-    child1 = np.round(alpha * parent1 + (1 - alpha) * parent2).astype(int)
-    child2 = np.round((1 - alpha) * parent1 + alpha * parent2).astype(int)
-    return repair_balance(child1), repair_balance(child2)
-
-def random_block_crossover(parent1, parent2):
-    block_size = random.randint(1, n // 2)
-    start = random.randint(0, n - block_size)
-    mask = np.zeros(parent1.shape, dtype=bool)
-    mask[start:start + block_size] = True
-    child1 = np.where(mask, parent1, parent2)
-    child2 = np.where(mask, parent2, parent1)
-    return repair_balance(child1), repair_balance(child2)
-
-def ordered_crossover(parent1, parent2):
-    point1, point2 = sorted(random.sample(range(n), 2))
-    child1 = np.zeros_like(parent1)
-    child2 = np.zeros_like(parent2)
-
-    # Copy the segment from the first parent
-    child1[point1:point2] = parent1[point1:point2]
-    child2[point1:point2] = parent2[point1:point2]
-
-    # Fill the rest from the second parent
-    for i in range(point1):
-        child1[i] = parent2[i]
-        child2[i] = parent1[i]
-    for i in range(point2, n):
-        child1[i] = parent2[i]
-        child2[i] = parent1[i]
-
-    return repair_balance(child1), repair_balance(child2)
-
-def multi_parent_crossover(parents, weights=None):
-    if weights is None:
-        weights = [1 / len(parents)] * len(parents)  # Equal probability
-    weights = np.array(weights)
-    child = np.zeros_like(parents[0])
-
-    for i in range(n):
-        selected_parent = np.random.choice(range(len(parents)), p=weights)
-        child[i] = parents[selected_parent][i]
-
-    return repair_balance(child)
-
-def dynamic_crossover(parent1, parent2, generation, total_generations):
-    if generation < total_generations // 3:
-        return uniform_crossover(parent1, parent2)
-    elif generation < 2 * total_generations // 3:
-        return two_point_crossover(parent1, parent2)
-    else:
-        return arithmetic_crossover(parent1, parent2)
-
 def heuristic_crossover(parent1, parent2):
     """
     Perform heuristic crossover using the affinity matrix.
@@ -166,39 +113,6 @@ def heuristic_crossover2(parent1, parent2, k=37):
 
     # Return two identical children (to match the algorithm structure)
     return child, child
-
-def heuristic_crossover3(parent1, parent2):
-    """
-    Perform heuristic crossover using the affinity matrix.
-    Each student is assigned to the group from the parent with higher affinity.
-    """
-    # Initialize an empty child chromosome
-    child = np.zeros_like(parent1, dtype=int)
-
-    for student in range(parent1.shape[0]):
-        # Get the groups assigned in both parents
-        group_parent1 = np.where(parent1[student] == 1)[0][0]
-        group_parent2 = np.where(parent2[student] == 1)[0][0]
-
-        # Compare affinity values
-        affinity1 = affinity_matrix[student, group_parent1]
-        affinity2 = affinity_matrix[student, group_parent2]
-
-        # Assign the group from the parent with higher affinity
-        if affinity1 > affinity2:
-            child[student, group_parent1] = 1
-        elif affinity2 > affinity1:
-            child[student, group_parent2] = 1
-        else:
-            # If affinity values are equal, randomly pick one parent's assignment
-            chosen_group = random.choice([group_parent1, group_parent2])
-            child[student, chosen_group] = 1
-
-    # Ensure the child respects the group size constraints
-    child = repair_balance(child)
-
-    # Return two identical children (to match the algorithm structure)
-    return child, child  # Both children are the same
 
 def stochastic_heuristic_crossover(parent1, parent2, k=8, randomness=0.2):
     """

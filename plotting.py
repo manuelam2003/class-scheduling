@@ -6,7 +6,7 @@ def plot_results(results):
     plt.figure(figsize=(12, 8))
 
     # Best fitness bar plot
-    plt.subplot(1, 2, 1)
+    # plt.subplot(1, 2, 1)
     avg_best_fitness = {method: np.mean(results[method]["best_fitness"]) for method in results.keys()}
     std_best_fitness = {method: np.std(results[method]["best_fitness"]) for method in results.keys()}
     methods = list(results.keys())
@@ -14,9 +14,10 @@ def plot_results(results):
     plt.xlabel("Crossover Methods")
     plt.ylabel("Best Fitness (Mean ± Std)")
     plt.title("Comparison of Best Fitness")
+    plt.show()
 
     # Average fitness progress
-    plt.subplot(1, 2, 2)
+    # plt.subplot(1, 2, 2)
     for method, data in results.items():
         plt.plot(data["avg_fitness_progress"], label=method)
     plt.xlabel("Generation")

@@ -14,7 +14,7 @@ pop_size = 300
 generations = 100
 mutation_rate = 0.5
 elitism = 40
-trials = 5  # Number of runs per operator
+trials = 3  # Number of runs per operator
 patience = 20
 
 crossover_methods = {}
