@@ -9,7 +9,6 @@ affinity_matrix = np.random.uniform(0, 5, (n, m))  # Affinity values
 # Ensure no 0-affinity groups for random initialization
 affinity_matrix[affinity_matrix < 1] = 0.1
 
-
 # Parameters
 pop_size = 300
 generations = 100

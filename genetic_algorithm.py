@@ -1,8 +1,8 @@
 from helpers import initialize_population
-from genetic_operations import fitness, mutate, select
+from genetic_operations import *
 from crossover_methods import *
 
-def genetic_algorithm(pop_size=50, generations=100, mutation_rate=0.1, elitism=1, patience=10, crossover_method=None):
+def genetic_algorithm(pop_size=50, generations=100, mutation_rate=0.1, elitism=1, patience=10, crossover_method=None, select=tournament_selection):
     population = initialize_population(pop_size)
     no_improvement = 0
     best_fitness = float('-inf')
