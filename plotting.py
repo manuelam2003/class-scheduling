@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
 
-def plot_results(results):
+def plot_results(results, xasis):
     # Plotting results
     plt.figure(figsize=(12, 8))
 
@@ -11,7 +11,7 @@ def plot_results(results):
     std_best_fitness = {method: np.std(results[method]["best_fitness"]) for method in results.keys()}
     methods = list(results.keys())
     plt.bar(methods, avg_best_fitness.values(), yerr=std_best_fitness.values(), capsize=5, color='skyblue')
-    plt.xlabel("Crossover Methods")
+    plt.xlabel(xasis)
     plt.ylabel("Best Fitness (Mean ± Std)")
     plt.title("Comparison of Best Fitness")
     plt.show()
