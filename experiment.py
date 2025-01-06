@@ -9,12 +9,13 @@ import random
 
 # Define crossover methods
 crossover_methods.update({
-    "Single-point": single_point_crossover,
-    "Two-point": two_point_crossover,
+    # "Single-point": single_point_crossover,
+    # "Two-point": two_point_crossover,
+    # "Heuristic": heuristic_crossover,
+    # "Heuristic 2": heuristic_crossover2,
+    # "Stochastic heuristic": stochastic_heuristic_crossover,
     "Uniform": uniform_crossover,
-    "Heuristic": heuristic_crossover,
-    "Heuristic 2": heuristic_crossover2,
-    "Stochastic heuristic": stochastic_heuristic_crossover,
+    "Bernouilli": bernouilli_crossover,
 })
 
 # Storage for results

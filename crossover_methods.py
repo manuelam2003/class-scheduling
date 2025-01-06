@@ -2,6 +2,7 @@ import numpy as np
 import random
 from helpers import repair_balance
 from parameters import n, affinity_matrix
+from genetic_operations import fitness
 
 # Crossover: Single-point crossover
 def single_point_crossover(parent1, parent2):
@@ -15,6 +16,39 @@ def uniform_crossover(parent1, parent2):
     child1 = np.where(mask, parent1, parent2)
     child2 = np.where(mask, parent2, parent1)
     return repair_balance(child1), repair_balance(child2)
+
+def bernouilli_crossover(parent1, parent2):
+    """
+    Perform uniform crossover with a binary mask influenced by parent fitness.
+
+    Args:
+        parent1: The first parent chromosome (numpy array).
+        parent2: The second parent chromosome (numpy array).
+        fitness1: Fitness score of the first parent.
+        fitness2: Fitness score of the second parent.
+
+    Returns:
+        Two children after crossover.
+    """
+    # Calculate selection probabilities based on fitness
+    fitness1 = fitness(parent1)
+    fitness2 = fitness(parent2)
+    total_fitness = fitness1 + fitness2
+    if total_fitness == 0:  # Avoid division by zero
+        prob_parent1 = 0.5
+    else:
+        prob_parent1 = fitness1 / total_fitness
+
+    # Generate a probabilistic binary mask based on parent fitness
+    mask = np.random.rand(*parent1.shape) < prob_parent1
+
+    # Create children using the mask
+    child1 = np.where(mask, parent1, parent2)
+    child2 = np.where(mask, parent2, parent1)
+
+    # Ensure the children respect group size constraints
+    return repair_balance(child1), repair_balance(child2)
+
 
 def two_point_crossover(parent1, parent2):
     point1, point2 = sorted(random.sample(range(n), 2))
